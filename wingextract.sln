@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wingextract", "wingextract\wingextract.csproj", "{80BF1527-C544-4DDF-A6D1-F867059CFEB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80BF1527-C544-4DDF-A6D1-F867059CFEB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BF1527-C544-4DDF-A6D1-F867059CFEB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BF1527-C544-4DDF-A6D1-F867059CFEB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BF1527-C544-4DDF-A6D1-F867059CFEB1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A44E22C9-D42B-429E-8CDD-2FD7DC50C952}
+	EndGlobalSection
+EndGlobal

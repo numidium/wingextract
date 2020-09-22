@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "BuGnpJymjDf6Tbz3BrGtbh6U5TlgO6nV6skQlOMCxQQbTlHeUKGy+R5bCUtgrb3vHiWPUkkFsn7eBZz6vQsKiQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\rbrtc\\Documents\\GitHub\\wingextract\\wingextract\\wingextract.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\rbrtc\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
+    "C:\\Users\\rbrtc\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\rbrtc\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}
