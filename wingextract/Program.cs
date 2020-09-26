@@ -27,7 +27,39 @@ namespace wingextract
             }
 
             var bitmaps = GraphicsIO.GetBitmapsFromVXX("ARROW.VGA", palette);
-            GraphicsIO.WriteBitmaps(bitmaps);
+            WriteBitmaps(GetGDIBitmaps(bitmaps));
+        }
+
+        public static Bitmap GetGDIBitmap(WingBitmap wingBitmap)
+        {
+            var bitmap = new Bitmap(wingBitmap.Width, wingBitmap.Height)
+            {
+                Tag = wingBitmap.FileName
+            };
+
+            foreach (var pixel in wingBitmap.Pixels)
+                bitmap.SetPixel(pixel.X, pixel.Y, Color.FromArgb(pixel.Color.R, pixel.Color.G, pixel.Color.B));
+
+            return bitmap;
+        }
+
+        public static List<Bitmap> GetGDIBitmaps(List<WingBitmap> wingBitmaps)
+        {
+            var bitmaps = new List<Bitmap>();
+            foreach (var wingBitmap in wingBitmaps)
+                bitmaps.Add(GetGDIBitmap(wingBitmap));
+
+            return bitmaps;
+        }
+
+        public static void WriteBitmaps(List<Bitmap> bitmaps)
+        {
+            foreach (var bitmap in bitmaps)
+            {
+                string fileName = (string)bitmap.Tag;
+                Console.WriteLine("Writing image to file: " + fileName);
+                bitmap.Save(fileName);
+            }
         }
     }
 }

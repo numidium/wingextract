@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -25,10 +24,10 @@ namespace wingextract
         /// </summary>
         /// <param name="fileName">The filesystem path to the palette file.</param>
         /// <returns>An array of full-alpha colors.</returns>
-        public static Color[] LoadPalette(string fileName)
+        public static WingBitmap.Color[] LoadPalette(string fileName)
         {
             const int paletteColorCount = 256;
-            var palette = new Color[paletteColorCount];
+            var palette = new WingBitmap.Color[paletteColorCount];
             var stream = File.OpenRead(fileName);
             if (stream.Length != paletteColorCount * 3)
                 return null;
@@ -36,7 +35,12 @@ namespace wingextract
             {
                 int i = 0;
                 while (binaryReader.PeekChar() != -1 && i < paletteColorCount)
-                    palette[i++] = Color.FromArgb(binaryReader.ReadByte(), binaryReader.ReadByte(), binaryReader.ReadByte());
+                    palette[i++] = new WingBitmap.Color 
+                    {
+                        R = binaryReader.ReadByte(),
+                        G = binaryReader.ReadByte(),
+                        B = binaryReader.ReadByte() 
+                    };
             }
 
             return palette;
@@ -46,18 +50,17 @@ namespace wingextract
         /// Converts Wing Commander VGA images to a usable bitmap format.
         /// VGA files contain a table of image collections. Each collection contains a sequence of images.
         /// Each image contains a sequence of run-length encoded pixels plotted about a specified origin.
-        /// 
         /// </summary>
         /// <param name="fileName">The filesystem path to the VGA file.</param>
         /// <param name="palette">A color palette to use when creating the bitmaps. Must have a length of 256.</param>
         /// <returns>A list of bitmaps from a Wing Commander VGA file.</returns>
-        public static List<Bitmap> GetBitmapsFromVXX(string fileName, Color[] palette)
+        public static List<WingBitmap> GetBitmapsFromVXX(string fileName, WingBitmap.Color[] palette)
         {
             if (!File.Exists(fileName))
                 return null;
             if (palette.Length != 256)
                 return null;
-            var bitmaps = new List<Bitmap>();
+            var bitmaps = new List<WingBitmap>();
             using (var binaryReader = new BinaryReader(File.OpenRead(fileName)))
             {
                 var fileLength = binaryReader.ReadUInt32();
@@ -91,10 +94,7 @@ namespace wingextract
                     // Apply pixels to bitmaps
                     for (int imageIndex = 0; imageIndex < tables.Last().Offsets.Count; imageIndex++)
                     {
-                        var bitmap = new Bitmap(320, 200)
-                        {
-                            Tag = "vga" + collectionIndex.ToString() + "_" + imageIndex.ToString() + ".png"
-                        };
+                        var bitmap = new WingBitmap(320, 200, "vga" + collectionIndex.ToString() + "_" + imageIndex.ToString() + ".png");
 
                         var x2 = binaryReader.ReadInt16();
                         var x1 = binaryReader.ReadInt16();
@@ -166,16 +166,6 @@ namespace wingextract
             }
 
             return bitmaps;
-        }
-
-        public static void WriteBitmaps(List<Bitmap> bitmaps)
-        {
-            foreach (var bitmap in bitmaps)
-            {
-                string fileName = (string)bitmap.Tag;
-                Console.WriteLine("Writing image to file: " + fileName);
-                bitmap.Save(fileName);
-            }
         }
 
         private static void WriteInvalidPixelError(int x, int y)
