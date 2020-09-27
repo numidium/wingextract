@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Net;
 
 namespace wingextract
 {
@@ -26,7 +23,7 @@ namespace wingextract
                 return;
             }
 
-            var bitmaps = GraphicsIO.GetBitmapsFromVXX("ARROW.VGA", palette);
+            var bitmaps = GraphicsIO.GetBitmapsFromVXX("COCKPIT.VGA", palette);
             WriteBitmaps(GetGDIBitmaps(bitmaps));
         }
 
@@ -58,7 +55,7 @@ namespace wingextract
             {
                 string fileName = (string)bitmap.Tag;
                 Console.WriteLine("Writing image to file: " + fileName);
-                bitmap.Save(fileName);
+                bitmap.Save("./Output/" + fileName);
             }
         }
     }

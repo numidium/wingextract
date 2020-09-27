@@ -78,7 +78,8 @@ namespace wingextract
                     if (tables.Last().Offsets[0] > fileLength)
                     {
                         Console.WriteLine("Table offset at " + binaryReader.BaseStream.Position + " exceeds file length. Skipping.");
-                        binaryReader.BaseStream.Seek(tableOffsets[collectionIndex + 1], SeekOrigin.Begin);
+                        if (collectionIndex < tableOffsets.Count - 1)
+                            binaryReader.BaseStream.Seek(tableOffsets[collectionIndex + 1], SeekOrigin.Begin);
                         continue;
                     }
                     else // read more pointers to image data from lv2 table
@@ -108,17 +109,18 @@ namespace wingextract
                         {
                             var dx = binaryReader.ReadInt16();
                             var dy = binaryReader.ReadInt16();
+                            var pixelY = origin.Item2 + dy;
                             byte colorIndex;
                             if ((key & 1) == 0) // Perform 1st level loop
                             {
                                 for (int runIndex = 0; runIndex < key >> 1; runIndex++)
                                 {
+                                    var pixelX = origin.Item1 + dx;
                                     colorIndex = binaryReader.ReadByte();
-                                    if (dx + origin.Item1 >= width || origin.Item2 >= height ||
-                                        dx + origin.Item1 < 0 || dy + origin.Item2 < 0)
-                                        WriteInvalidPixelError(origin.Item1 + dx, origin.Item2 + dy);
+                                    if (ValidatePixel(pixelX, pixelY, width, height, bitmap.Width, bitmap.Height))
+                                        bitmap.SetPixel(pixelX, pixelY, palette[colorIndex]);
                                     else
-                                        bitmap.SetPixel(origin.Item1 + dx, origin.Item2 + dy, palette[colorIndex]);
+                                        WriteInvalidPixelError(pixelX, pixelY);
                                     dx++;
                                 }
                             }
@@ -132,12 +134,12 @@ namespace wingextract
                                     {
                                         for (int i = 0; i < key2 >> 1; i++)
                                         {
+                                            var pixelX = origin.Item1 + dx;
                                             colorIndex = binaryReader.ReadByte();
-                                            if (dx + origin.Item1 >= width || dy + origin.Item2 >= height ||
-                                                dx + origin.Item1 < 0 || dy + origin.Item2 < 0)
-                                                WriteInvalidPixelError(origin.Item1 + dx, origin.Item2 + dy);
+                                            if (ValidatePixel(pixelX, pixelY, width, height, bitmap.Width, bitmap.Height))
+                                                bitmap.SetPixel(pixelX, pixelY, palette[colorIndex]);
                                             else
-                                                bitmap.SetPixel(origin.Item1 + dx, origin.Item2 + dy, palette[colorIndex]);
+                                                WriteInvalidPixelError(pixelX, pixelY);
                                             runIndex++;
                                             dx++;
                                         }
@@ -147,11 +149,11 @@ namespace wingextract
                                         colorIndex = binaryReader.ReadByte();
                                         for (int i = 0; i < key2 >> 1; i++)
                                         {
-                                            if (dx + origin.Item1 >= width || origin.Item2 >= height ||
-                                                dx + origin.Item1 < 0 || dy + origin.Item2 < 0)
-                                                WriteInvalidPixelError(origin.Item1 + dx, origin.Item2 + dy);
+                                            var pixelX = origin.Item1 + dx;
+                                            if (ValidatePixel(pixelX, pixelY, width, height, bitmap.Width, bitmap.Height))
+                                                bitmap.SetPixel(origin.Item1 + dx, pixelY, palette[colorIndex]);
                                             else
-                                                bitmap.SetPixel(origin.Item1 + dx, origin.Item2 + dy, palette[colorIndex]);
+                                                WriteInvalidPixelError(origin.Item1 + dx, pixelY);
                                             runIndex++;
                                             dx++;
                                         }
@@ -168,9 +170,11 @@ namespace wingextract
             return bitmaps;
         }
 
+        private static bool ValidatePixel(int x, int y, int width, int height, int bitmapWidth, int bitmapHeight)
+            => !(x >= width || y >= height || x < 0 || y < 0 || x >= bitmapWidth || y >= bitmapHeight);
+        
+
         private static void WriteInvalidPixelError(int x, int y)
-        {
-            Console.WriteLine("Skipping invalid pixel coordinates: " + x + ", " + y);
-        }
+            => Console.WriteLine("Skipping invalid pixel coordinates: " + x + ", " + y);
     }
 }
